@@ -1,29 +1,39 @@
-import pygame,sys
+import pygame
 
+# Initialize Pygame and create a game window
 pygame.init()
-clock  = pygame.time.Clock()
-screen = pygame.display.set_mode((500,500),0,32)
-Font = pygame.font.SysFont("Roboto",32)
-Input_text =""
-# Game Loop ----------------------------------------------------------------- #
-while True:
-  # Background  ------------------------------------------------------------- #
-  screen.fill('White')
+clock = pygame.time.Clock()
+window_width = 800
+window_height = 600
+window = pygame.display.set_mode((window_width, window_height))
 
-  for event in pygame.event.get():
-    if event.type == pygame.QUIT:
-      pygame.quit()
-      sys.exit()
-    if event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_ESCAPE:
-        pygame.quit()
-        sys.exit()
-      if event.key == pygame.K_BACKSPACE:
-        Input_text = Input_text[:-1]
-      else:
-        Input_text += event.unicode
+# Game variables
+game_running = True
+game_speed = 120  # Desired frame rate of the game (frames per second)
+player_speed = 5  # Player movement speed (pixels per frame)
+player_x = 0
+player_y = 100
+# Game loop
+while game_running:
+    # Handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            game_running = False
 
-  text_surf = Font.render(Input_text,True,(0,0,0))      
-  screen.blit(text_surf,(0,0))
-  clock.tick(60)
-  pygame.display.flip()
+    # Update game logic
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        player_x -= player_speed
+    if keys[pygame.K_RIGHT]:
+        player_x += player_speed
+
+    # Render the game
+    window.fill((0, 0, 0))  # Clear the screen
+    pygame.draw.rect(window, (255, 255, 255), pygame.Rect(player_x, player_y, 100, 100))  # Example player object
+
+    pygame.display.flip()  # Update the display
+
+    clock.tick(game_speed)  # Control the frame rate
+
+# Quit the game
+pygame.quit()

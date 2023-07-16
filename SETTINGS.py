@@ -1,2 +1,3 @@
 SCREEN = (1280,720)
 FPS = 60
+TIME = 10 # (sec)
