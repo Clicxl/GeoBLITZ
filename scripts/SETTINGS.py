@@ -9,4 +9,4 @@ from os import listdir
 BACKGROUND = (200,200,200)
 SCREEN = (1280,720)
 FPS = 60
-TIME = 10 # (sec)
+TIME = 30 # (sec)
