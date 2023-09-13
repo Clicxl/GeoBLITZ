@@ -18,6 +18,7 @@ class Country(pygame.sprite.Sprite):
         # Chances -------------------------------------------------------------#
         self.chances = 0
 
+
     def con_dict(self):
         for image in listdir('Assets/Countries'):
             self.Countries[image.replace(".png", "")] = {"Name": image.replace(".png", "").lower(),"Dir": "Countries/" + image}
@@ -39,16 +40,15 @@ class Country(pygame.sprite.Sprite):
             self.Countries_copy.pop(self.Rand_Cont)
             self.chances = 0
             self.redraw_display()
+            
         elif self.Input != "":
-            self.game.POINTS += 0
+            self.game.screen_shake.shake()
             self.chances += 1
-            print(self.chances)
             if self.chances == 3:
                 self.Countries_copy.pop(self.Rand_Cont)
                 self.redraw_display()
                 self.chances = 0
         return ""
-
     def redraw_display(self):
         self.randCont()
         self.game.Country_Display.fill("Black")
@@ -56,7 +56,6 @@ class Country(pygame.sprite.Sprite):
         # self.game.Country_Display.set_colorkey("Black")
         self.image = pygame.transform.scale(self.image, self.game.Country_Display.get_size())
         self.image.set_alpha(100)
-
 
 class Input(pygame.sprite.Sprite):
     def __init__(self, game):
@@ -86,7 +85,6 @@ class Input(pygame.sprite.Sprite):
         self.text_input(event)
         self.Font_surf = self.Font.render(self.Input_text,False,(0,0,0))
         self.image.blit(self.Font_surf, (10, 7))
-
 
 class Timer(pygame.sprite.Sprite):
     def __init__(self, game):
@@ -194,7 +192,7 @@ class Particle:
             
             if particle[2 ] <= 0:
                 self.particles.remove(particle)
-                
+
 class Button:
     def __init__(self,game,pos,image):
         self.game = game
@@ -215,3 +213,23 @@ class Button:
                 
             if pygame.mouse.get_pressed()[0] == 0 and self.clicked == True:
                 self.clicked = False
+
+class ScreenShake:
+    def __init__(self,game):
+        self.game = game
+        self.screen_shake = 0
+        self.render_offset = [0,0]
+    
+    def shake(self) -> "Screen Shake":
+        """Shakes the screen when something goes wrong"""
+        self.screen_shake = 30
+        for i in range (self.screen_shake):
+                
+            if self.screen_shake > 0:
+                self.screen_shake -= 1
+                
+            if self.screen_shake :
+                self.render_offset[0] = random.randint(0,32)-16
+                self.render_offset[1] = random.randint(0,32)-16
+            self.game.screen.fill((191,0,0,50))
+            self.game.screen.set_alpha(75)

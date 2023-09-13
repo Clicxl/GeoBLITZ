@@ -18,7 +18,7 @@ class Game:
         self.POINTS = 0
 
         self.Start = self.clock.get_time()
-        self.game_state = "game"
+        self.game_state = "menu"
         # Sprites And Groups ---------------------------------------------------------#
         self.Country = Country(self)
         self.Country_count = len(self.Country.Con_Keys) * 10
@@ -44,6 +44,8 @@ class Game:
         self.play = Button(self,(self.screen.get_width()/2,(3*self.screen.get_height()/5)-16),pygame.Surface((250,50)))
         self.options = Button(self,(self.screen.get_width()/2,(6*self.screen.get_height()/8)-16),pygame.Surface((250,50)))
         self.exit = Button(self,(self.screen.get_width()/2,(9*self.screen.get_height()/10)-16),pygame.Surface((250,50)))
+        self.screen_shake = ScreenShake(self)
+    
     def game(self):
         # Game Loop ----------------------------------------------------------------- #
         while True:
@@ -63,10 +65,12 @@ class Game:
 
             # Buttons  ---------------------------------------------------------------- #
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                if event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE] and self.game_state in ['game','menu']:
                     pygame.quit()
                     exit()
                 self.Text.update(event)
+                if pygame.key.get_pressed()[pygame.K_ESCAPE] and self.game_state in ['options']:
+                    self.game_state = 'menu'
                 if event.type == pygame.KEYDOWN:
                     if event.key == K_RETURN:
                         self.Text.Input_text = self.Country.check(self.Text.Input_text)
@@ -90,7 +94,8 @@ class Game:
                 self.Typing.type("Your Points are: "+str(self.POINTS),(250,250),32)
 
             self.particles.parti_draw()
-            self.main_screen.blit(self.screen, (0, 0))
+            self.main_screen.blit(self.screen, self.screen_shake.render_offset)
+            self.screen_shake.render_offset = [0,0]
             self.clock.tick(60)
             pygame.display.flip()
 
@@ -104,6 +109,14 @@ class Game:
         self.exit.draw()
         self.Typing.type("Exit",(self.screen.get_width()/2,(9*self.screen.get_height()/10)-20),50)
 
+        if self.play.clicked == True:
+            self.game_state = 'game'
+        elif self.options.clicked == True:
+            self.game_state = 'options'
+        elif self.exit.clicked == True:
+            pygame.quit()
+            exit()
+        
     def run(self):
         self.game()
 

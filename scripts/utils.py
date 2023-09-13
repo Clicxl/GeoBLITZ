@@ -13,14 +13,12 @@ def load_img(path):
     img = pygame.image.load(BASE_PATH + path).convert_alpha()
     return img
 
-
 def load_imgs(path_list):
     img_list = []
     for i in path_list:
         img = load_img(i)
         img_list.append(img)
     return img_list
-
 
 def paths(subfolders):
     for i in range(1, 2):
