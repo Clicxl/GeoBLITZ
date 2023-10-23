@@ -1,0 +1,11 @@
+### TODO
+Change the timer to the correct sprite
+Login interface
+Login System
+database intergration 
+leaderboard screen
+Difficulty System
+
+### BUGS
+Starting the timer after the play button is pressed
+Fix the white map.

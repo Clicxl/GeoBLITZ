@@ -17,7 +17,7 @@ class Game:
         self.Country_Rect = self.Country_Display.get_rect(center=(SCREEN[0] / 2, (SCREEN[1] / 2) - 100))
         self.POINTS = 0
 
-        self.Start = self.clock.get_time()
+        
         self.game_state = "menu"
         # Sprites And Groups ---------------------------------------------------------#
         self.Country = Country(self)
@@ -41,9 +41,9 @@ class Game:
         self.Para_3 = BackGround(self, self.BG_screen, 5,paths("Misc/"), 4)
         self.Typing = Font(self)
         self.particles = Particle(self)
-        self.play = Button(self,(self.screen.get_width()/2,(3*self.screen.get_height()/5)-16),pygame.Surface((250,50)))
-        self.options = Button(self,(self.screen.get_width()/2,(6*self.screen.get_height()/8)-16),pygame.Surface((250,50)))
-        self.exit = Button(self,(self.screen.get_width()/2,(9*self.screen.get_height()/10)-16),pygame.Surface((250,50)))
+        self.play = Button(self,pygame.Vector2(self.screen.get_width()/2,(3*self.screen.get_height()/5)-16),"Play")
+        self.options = Button(self,(self.screen.get_width()/2,(6*self.screen.get_height()/8)-16),"Options")
+        self.exit = Button(self,(self.screen.get_width()/2,(9*self.screen.get_height()/10)-16),"Exit")
         self.screen_shake = ScreenShake(self)
     
     def game(self):
@@ -61,7 +61,6 @@ class Game:
             self.Para_2.update()
             self.Para_3.update()
             self.screen.blit(self.BG_screen, (0, 0))
-
 
             # Buttons  ---------------------------------------------------------------- #
             for event in pygame.event.get():
@@ -96,21 +95,19 @@ class Game:
             self.particles.parti_draw()
             self.main_screen.blit(self.screen, self.screen_shake.render_offset)
             self.screen_shake.render_offset = [0,0]
-            self.clock.tick(60)
+            self.clock.tick(120)
             pygame.display.flip()
 
     def menu(self):
 
         self.Typing.type("Globule",(self.screen.get_width()/2,self.screen.get_height()/3),64)
-        self.play.draw()
-        self.Typing.type("Play",(self.screen.get_width()/2,(3*self.screen.get_height()/5)-20),50)
-        self.options.draw()
-        self.Typing.type("Options",(self.screen.get_width()/2,(6*self.screen.get_height()/8)-20),50)
-        self.exit.draw()
-        self.Typing.type("Exit",(self.screen.get_width()/2,(9*self.screen.get_height()/10)-20),50)
+        self.play.draw((self.screen.get_width()/2,(3*self.screen.get_height()/5)-20))
+        self.options.draw((self.screen.get_width()/2,(3*self.screen.get_height()/5)-20))
+        self.exit.draw((self.screen.get_width()/2,(9*self.screen.get_height()/10)-20))
 
         if self.play.clicked == True:
             self.game_state = 'game'
+            self.Start = self.clock.get_time()
         elif self.options.clicked == True:
             self.game_state = 'options'
         elif self.exit.clicked == True:

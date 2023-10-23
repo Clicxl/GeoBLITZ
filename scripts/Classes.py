@@ -61,7 +61,7 @@ class Input(pygame.sprite.Sprite):
     def __init__(self, game):
         super().__init__()
         self.game = game
-        self.Font = pygame.font.SysFont("Arial", 32)
+        self.Font = pygame.font.Font("Assets\Fonts\Font.ttf", 32)
         # Sprite --------------------------------------------------------------#
         self.image = pygame.Surface((self.game.Country_Display.get_width(),50))
         self.image.fill('Grey')
@@ -157,10 +157,10 @@ class Font:
         self.game = game
 
     def type(self, statement,pos,size):
-        self.FONT = pygame.font.SysFont("Roboto", size)
+        self.FONT = pygame.font.Font("Assets\Fonts\Font.ttf", size)
         self.Font_surf = self.FONT.render(statement, False, (255, 255, 255))
         self.Font_rect = self.Font_surf.get_rect()
-        self.Font_rect.center = pos
+        self.Font_rect.center = pygame.Vector2(pos)
         self.game.screen.blit(self.Font_surf, self.Font_rect)
 
     def update(self, statement):
@@ -194,33 +194,42 @@ class Particle:
                 self.particles.remove(particle)
 
 class Button:
-    def __init__(self,game,pos,image):
+    def __init__(self,game,pos,statement):
         self.game = game
         self.pos = pos
-        self.image = image
-        self.image.fill('Red')
+        self.state = [pygame.transform.scale(pygame.image.load('Assets\Sprites\Button1.png'),(250,75)),pygame.transform.scale(pygame.image.load('Assets\Sprites\Button2.png'),(250,75))]
+        self.image = self.state[0]
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.clicked = False
+        self.statement = statement
+        self.Font = Font(self)
+        self.screen = self.game.screen 
         
-    def draw(self):
+    def draw(self,txt_pos):
         self.game.screen.blit(self.image,self.rect)
+        self.Font.type(self.statement,txt_pos,32)
         
         self.mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(self.mouse_pos):
+            self.image = self.state[1]
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
                 
             if pygame.mouse.get_pressed()[0] == 0 and self.clicked == True:
                 self.clicked = False
-
+                
+        else:
+            self.image = self.state[0]
+    def update(self):
+        self.draw()
 class ScreenShake:
     def __init__(self,game):
         self.game = game
         self.screen_shake = 0
         self.render_offset = [0,0]
     
-    def shake(self) -> "Screen Shake":
+    def shake(self):
         """Shakes the screen when something goes wrong"""
         self.screen_shake = 30
         for i in range (self.screen_shake):
