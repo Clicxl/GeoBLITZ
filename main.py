@@ -1,6 +1,6 @@
 # imports  -------------------------------------------------------------------- #
 from scripts.Classes import *
-
+from scripts.filesSQL import *
 
 class Game:
     def __init__(self):
@@ -16,7 +16,7 @@ class Game:
         self.Country_Display.set_colorkey((0, 0, 0))
         self.Country_Rect = self.Country_Display.get_rect(center=(SCREEN[0] / 2, (SCREEN[1] / 2) - 100))
         self.POINTS = 0
-
+        self.main_data = {}
         
         self.game_state = "menu"
         # Sprites And Groups ---------------------------------------------------------#
@@ -41,10 +41,12 @@ class Game:
         self.Para_3 = BackGround(self, self.BG_screen, 5,paths("Misc/"), 4)
         self.Typing = Font(self)
         self.particles = Particle(self)
-        self.play = Button(self,pygame.Vector2(self.screen.get_width()/2,(3*self.screen.get_height()/5)-16),"Play")
-        self.options = Button(self,(self.screen.get_width()/2,(6*self.screen.get_height()/8)-16),"Options")
+        self.play = Button(self,(self.screen.get_width()/2,(3*self.screen.get_height()/5)-16),"Play")
+        self.options = Button(self,(self.screen.get_width()/2,(6*self.screen.get_height()/8)-16),"Help")
         self.exit = Button(self,(self.screen.get_width()/2,(9*self.screen.get_height()/10)-16),"Exit")
         self.screen_shake = ScreenShake(self)
+        self.SQL = SQL(self,"root")
+        self.Binary = BinaryFile(self,"Assets\Data\Data.dat")
     
     def game(self):
         # Game Loop ----------------------------------------------------------------- #
@@ -90,7 +92,10 @@ class Game:
             if self.game_state == 'menu':
                 self.menu()
             if self.game_state == False:
-                self.Typing.type("Your Points are: "+str(self.POINTS),(250,250),32)
+                print(str(self.POINTS))
+                self.Typing.type("Your Points are: "+str(self.POINTS),(self.screen.get_width()/2,self.screen.get_height()/2),64)
+                self.SQL.add_points(self.player_id,self.POINTS)
+                self.Binary.write_score({self.player_id:self.POINTS})
 
             self.particles.parti_draw()
             self.main_screen.blit(self.screen, self.screen_shake.render_offset)
@@ -101,14 +106,15 @@ class Game:
     def menu(self):
 
         self.Typing.type("Globule",(self.screen.get_width()/2,self.screen.get_height()/3),64)
-        self.play.draw((self.screen.get_width()/2,(3*self.screen.get_height()/5)-20))
-        self.options.draw((self.screen.get_width()/2,(3*self.screen.get_height()/5)-20))
-        self.exit.draw((self.screen.get_width()/2,(9*self.screen.get_height()/10)-20))
+        self.play.draw()
+        self.options.draw()
+        self.exit.draw()
+        
 
         if self.play.clicked == True:
             self.game_state = 'game'
             self.Start = self.clock.get_time()
-        elif self.options.clicked == True:
+        elif self.options.clicked == True:  
             self.game_state = 'options'
         elif self.exit.clicked == True:
             pygame.quit()

@@ -1,5 +1,6 @@
 from scripts.SETTINGS import *
 from scripts.utils import *
+from scripts.filesSQL import *
 
 
 class Country(pygame.sprite.Sprite):
@@ -10,6 +11,7 @@ class Country(pygame.sprite.Sprite):
         self.Countries = {}
         self.con_dict()
         self.randCont()
+        
         # Sprites -------------------------------------------------------------#
         self.image = load_img(self.Img_path)
         self.image = pygame.transform.scale(self.image, self.game.Country_Display.get_size())
@@ -32,6 +34,9 @@ class Country(pygame.sprite.Sprite):
         except:
             self.game.game_state = False
             print(self.game.POINTS)
+            if self.game.Binary.read_scores():
+                pass
+            # self.game.Binary.write_score(self.game.main_data[self.game.username] = {"score":self.game.POINTS})
 
     def check(self, Input):
         self.Input = Input.lower()
@@ -196,7 +201,7 @@ class Particle:
 class Button:
     def __init__(self,game,pos,statement):
         self.game = game
-        self.pos = pos
+        self.pos = pygame.Vector2(pos)
         self.state = [pygame.transform.scale(pygame.image.load('Assets\Sprites\Button1.png'),(250,75)),pygame.transform.scale(pygame.image.load('Assets\Sprites\Button2.png'),(250,75))]
         self.image = self.state[0]
         self.rect = self.image.get_rect()
@@ -205,14 +210,23 @@ class Button:
         self.statement = statement
         self.Font = Font(self)
         self.screen = self.game.screen 
+        self.Font_center = list(self.rect.center)
+        pygame.mixer.music.load("Assets\Music\Click.wav")
+        pygame.mixer.music.set_volume(0.7)
         
-    def draw(self,txt_pos):
+    def draw(self):
         self.game.screen.blit(self.image,self.rect)
-        self.Font.type(self.statement,txt_pos,32)
+        self.Font.type(self.statement,self.Font_center,45)
         
         self.mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(self.mouse_pos):
             self.image = self.state[1]
+            pygame.mixer.music.play(0)
+            self.Font_center[1] += 4
+            if self.Font_center[1] >= self.rect.center[1] + 4:
+                self.Font_center[1]  = self.rect.center[1] + 4
+                
+            
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
                 
@@ -221,6 +235,7 @@ class Button:
                 
         else:
             self.image = self.state[0]
+            self.Font_center = list(self.rect.center)
     def update(self):
         self.draw()
 class ScreenShake:
