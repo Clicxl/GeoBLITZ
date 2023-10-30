@@ -211,8 +211,8 @@ class Button:
         self.Font = Font(self)
         self.screen = self.game.screen 
         self.Font_center = list(self.rect.center)
-        pygame.mixer.music.load("Assets\Music\Click.wav")
-        pygame.mixer.music.set_volume(0.7)
+        self.music = pygame.mixer.Sound("Assets\Music\Click.wav")
+        self.music.set_volume(0.7)
         
     def draw(self):
         self.game.screen.blit(self.image,self.rect)
@@ -221,7 +221,6 @@ class Button:
         self.mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(self.mouse_pos):
             self.image = self.state[1]
-            pygame.mixer.music.play(0)
             self.Font_center[1] += 4
             if self.Font_center[1] >= self.rect.center[1] + 4:
                 self.Font_center[1]  = self.rect.center[1] + 4
@@ -229,6 +228,7 @@ class Button:
             
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
+                self.music.play(0)                
                 
             if pygame.mouse.get_pressed()[0] == 0 and self.clicked == True:
                 self.clicked = False
@@ -243,6 +243,9 @@ class ScreenShake:
         self.game = game
         self.screen_shake = 0
         self.render_offset = [0,0]
+        self.music = pygame.mixer.Sound("Assets\Music\Wrong.wav")
+        self.music.set_volume(0.7)
+        
     
     def shake(self):
         """Shakes the screen when something goes wrong"""
@@ -255,5 +258,8 @@ class ScreenShake:
             if self.screen_shake :
                 self.render_offset[0] = random.randint(0,32)-16
                 self.render_offset[1] = random.randint(0,32)-16
+                self.music.play(0)                
+                
+                
             self.game.screen.fill((191,0,0,50))
             self.game.screen.set_alpha(75)

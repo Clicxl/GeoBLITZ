@@ -9,7 +9,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.main_screen = pygame.display.set_mode(SCREEN, 0, 32)
         self.screen = pygame.Surface(self.main_screen.get_size())
-        pygame.display.set_caption("GeoBLITZ")
+        pygame.display.set_caption("Globue")
         pygame.mouse.set_visible(False)
         # Other Variables ------------------------------------------------------------#
         self.Country_Display = pygame.Surface((400, 400))
@@ -42,12 +42,13 @@ class Game:
         self.Typing = Font(self)
         self.particles = Particle(self)
         self.play = Button(self,(self.screen.get_width()/2,(3*self.screen.get_height()/5)-16),"Play")
-        self.options = Button(self,(self.screen.get_width()/2,(6*self.screen.get_height()/8)-16),"Help")
+        # self.login = Button(self,(self.screen.get_width()/2,(6*self.screen.get_height()/8)-16),"Login")
         self.exit = Button(self,(self.screen.get_width()/2,(9*self.screen.get_height()/10)-16),"Exit")
         self.screen_shake = ScreenShake(self)
-        self.SQL = SQL(self,"root")
+        # self.SQL = SQL(self,"root")
         self.Binary = BinaryFile(self,"Assets\Data\Data.dat")
-    
+
+        #Music
     def game(self):
         # Game Loop ----------------------------------------------------------------- #
         while True:
@@ -70,11 +71,12 @@ class Game:
                     pygame.quit()
                     exit()
                 self.Text.update(event)
-                if pygame.key.get_pressed()[pygame.K_ESCAPE] and self.game_state in ['options']:
+                if pygame.key.get_pressed()[pygame.K_ESCAPE] and self.game_state in ['login']:
                     self.game_state = 'menu'
                 if event.type == pygame.KEYDOWN:
                     if event.key == K_RETURN:
                         self.Text.Input_text = self.Country.check(self.Text.Input_text)
+                        
 
                 # Sprite Group Update ----------------------------------------------------- #
             if self.game_state == 'game':
@@ -94,9 +96,13 @@ class Game:
             if self.game_state == False:
                 print(str(self.POINTS))
                 self.Typing.type("Your Points are: "+str(self.POINTS),(self.screen.get_width()/2,self.screen.get_height()/2),64)
-                self.SQL.add_points(self.player_id,self.POINTS)
+                self.End.play(0)
+                # self.SQL.add_points(self.player_id,self.POINTS)
                 self.Binary.write_score({self.player_id:self.POINTS})
 
+            if self.game_state == "login":
+                self.SQL.login_screen()
+                
             self.particles.parti_draw()
             self.main_screen.blit(self.screen, self.screen_shake.render_offset)
             self.screen_shake.render_offset = [0,0]
@@ -107,21 +113,22 @@ class Game:
 
         self.Typing.type("Globule",(self.screen.get_width()/2,self.screen.get_height()/3),64)
         self.play.draw()
-        self.options.draw()
+        # self.login.draw()
         self.exit.draw()
         
 
         if self.play.clicked == True:
             self.game_state = 'game'
             self.Start = self.clock.get_time()
-        elif self.options.clicked == True:  
-            self.game_state = 'options'
+        # elif self.login.clicked == True:  
+            # self.game_state = 'login'
         elif self.exit.clicked == True:
             pygame.quit()
             exit()
         
     def run(self):
         self.game()
+    
 
 if __name__ == "__main__":
     Game = Game()
