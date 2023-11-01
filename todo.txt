@@ -2,7 +2,7 @@
 Change the timer to the correct sprite
 Login interface
 Login System
-database intergration 
+
 leaderboard screen
 Difficulty System
 

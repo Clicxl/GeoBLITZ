@@ -1,12 +1,12 @@
-# Contributing to GeoBLITZ
+# Contributing to Globule
 
-🎉 Thank you for considering contributing to GeoBLITZ! 🎉
+🎉 Thank you for considering contributing to Globule! 🎉
 
-We welcome contributions from the community and appreciate any help in making GeoBLITZ even better.
+We welcome contributions from the community and appreciate any help in making Globule even better.
 
 ## How to Contribute
 
-To contribute to GeoBLITZ, please follow these steps:
+To contribute to Globule, please follow these steps:
 
 1. Fork the repository to your own GitHub account.
 2. Create a new branch with a descriptive name for your feature or bug fix.
@@ -29,6 +29,6 @@ If you encounter any bugs, issues, or have feature requests, please open an issu
 
 ## Licensing
 
-By contributing to GeoBLITZ, you agree that your contributions will be licensed under the [CC BY-NC-ND 4.0 License](LICENSE.md). Please make sure you understand and agree to this before submitting a pull request.
+By contributing to Globule, you agree that your contributions will be licensed under the [CC BY-NC-ND 4.0 License](LICENSE.md). Please make sure you understand and agree to this before submitting a pull request.
 
-Thank you for your contribution and support in making GeoBLITZ a great game! 🌍🎮
+Thank you for your contribution and support in making Globule a great game! 🌍🎮

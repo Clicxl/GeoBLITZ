@@ -1,7 +1,8 @@
 from subprocess import run
-import pygame
+import pygame 
 from pygame.locals import *
 from os import listdir
+from random import randint
 
 def req(file):
     command = ["pip","install","-r",file]
@@ -30,3 +31,10 @@ def sprite_sheet(image,size):
     surf = pygame.Surface(size).convert_alpha()
     
     return image
+
+def ID():
+    ID = ""
+    for i in range(15):
+        Num = str(randint(0,100))
+        ID = ID + Num
+    return ID 

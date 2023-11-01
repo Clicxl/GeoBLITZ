@@ -33,10 +33,8 @@ class Country(pygame.sprite.Sprite):
             self.Img_path = self.Countries_copy[self.Rand_Cont]["Dir"]
         except:
             self.game.game_state = False
-            print(self.game.POINTS)
-            if self.game.Binary.read_scores():
-                pass
-            # self.game.Binary.write_score(self.game.main_data[self.game.username] = {"score":self.game.POINTS})
+            
+            
 
     def check(self, Input):
         self.Input = Input.lower()
@@ -50,9 +48,14 @@ class Country(pygame.sprite.Sprite):
             self.game.screen_shake.shake()
             self.chances += 1
             if self.chances == 3:
+                self.game.POINTS -= 1
                 self.Countries_copy.pop(self.Rand_Cont)
                 self.redraw_display()
                 self.chances = 0
+        if self.game.game_state == False:
+            self.game.Binary.write_score({self.game.ID: {"score": self.game.POINTS}})
+            self.game.SQL.update(self.game.POINTS)
+            
         return ""
     def redraw_display(self):
         self.randCont()
@@ -63,32 +66,32 @@ class Country(pygame.sprite.Sprite):
         self.image.set_alpha(100)
 
 class Input(pygame.sprite.Sprite):
-    def __init__(self, game):
+    def __init__(self, game,color):
         super().__init__()
+        self.color = color
         self.game = game
-        self.Font = pygame.font.Font("Assets\Fonts\Font.ttf", 32)
+        self.Font = Font(self.game)
+        # pygame.font.Font("Assets/Fonts/Font.otf", 20)
+
         # Sprite --------------------------------------------------------------#
         self.image = pygame.Surface((self.game.Country_Display.get_width(),50))
-        self.image.fill('Grey')
-
-        # self.image = pygame.transform.scale(self.image,(self.game.Country_Display.get_width(), 50))
+        self.image.fill(self.color)
         
         self.rect = self.image.get_rect()
         self.rect.topleft = [self.game.Country_Rect.left, self.game.Country_Rect.bottom + 100]
         self.Input_text = ""
 
     def text_input(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key not in [K_RETURN, K_TAB, K_DELETE]:
-                if event.key == K_BACKSPACE:
-                    self.Input_text = self.Input_text[:-1]
-                else:
-                    self.Input_text += event.unicode
+        if event.type == pygame.KEYDOWN and event.key not in [K_RETURN, K_TAB, K_DELETE]:
+            if event.key == K_BACKSPACE:
+                self.Input_text = self.Input_text[:-1]
+            else:
+                self.Input_text += event.unicode
 
     def update(self, event):
-        self.image.fill('Grey')
+        self.image.fill(self.color)
         self.text_input(event)
-        self.Font_surf = self.Font.render(self.Input_text,False,(0,0,0))
+        self.Font_surf = self.Font.type(self.Input_text.upper(),self.rect.center,16)
         self.image.blit(self.Font_surf, (10, 7))
 
 class Timer(pygame.sprite.Sprite):
@@ -162,11 +165,12 @@ class Font:
         self.game = game
 
     def type(self, statement,pos,size):
-        self.FONT = pygame.font.Font("Assets\Fonts\Font.ttf", size)
-        self.Font_surf = self.FONT.render(statement, False, (255, 255, 255))
+        self.FONT = pygame.font.Font("Assets/Fonts/Font.otf", size)
+        self.Font_surf = self.FONT.render(str(statement), False, (255, 255, 255))
         self.Font_rect = self.Font_surf.get_rect()
         self.Font_rect.center = pygame.Vector2(pos)
         self.game.screen.blit(self.Font_surf, self.Font_rect)
+        return self.Font_surf
 
     def update(self, statement):
         self.type(statement)
@@ -181,13 +185,14 @@ class Particle:
         
     def parti_draw(self):
         #Pariticle Variable
-        self.velocity = [random.randint(0,20)/10-1,-2]
+        self.velocity = [random.randint(0,20)/10-1,-1]
         self.time = random.randint(5,7)
         self.mouse_pos = pygame.mouse.get_pos()
         
         
         self.particles.append([list(self.mouse_pos),self.velocity,self.time])
         for particle in self.particles:
+            
             particle[0][0]+= particle[1][0] + 2 * self.game.dt
             particle[0][1] += particle[1][1] + 4 * self.game.dt
             particle[1][1] += 0.003 * self.game.dt
@@ -202,7 +207,7 @@ class Button:
     def __init__(self,game,pos,statement):
         self.game = game
         self.pos = pygame.Vector2(pos)
-        self.state = [pygame.transform.scale(pygame.image.load('Assets\Sprites\Button1.png'),(250,75)),pygame.transform.scale(pygame.image.load('Assets\Sprites\Button2.png'),(250,75))]
+        self.state = [pygame.transform.scale(pygame.image.load('Assets/Sprites/Button1.png'),(250,75)),pygame.transform.scale(pygame.image.load('Assets/Sprites/Button2.png'),(250,75))]
         self.image = self.state[0]
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
@@ -211,18 +216,18 @@ class Button:
         self.Font = Font(self)
         self.screen = self.game.screen 
         self.Font_center = list(self.rect.center)
-        self.music = pygame.mixer.Sound("Assets\Music\Click.wav")
+        self.music = pygame.mixer.Sound("Assets/Music/Click.wav")
         self.music.set_volume(0.7)
         
     def draw(self):
         self.game.screen.blit(self.image,self.rect)
-        self.Font.type(self.statement,self.Font_center,45)
+        self.Font.type(self.statement,(self.Font_center[0],self.Font_center[1] - 10),35)
         
         self.mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(self.mouse_pos):
             self.image = self.state[1]
             self.Font_center[1] += 4
-            if self.Font_center[1] >= self.rect.center[1] + 4:
+            if self.Font_center[1] >= self.rect.center[1] - 4:
                 self.Font_center[1]  = self.rect.center[1] + 4
                 
             
@@ -238,12 +243,13 @@ class Button:
             self.Font_center = list(self.rect.center)
     def update(self):
         self.draw()
+
 class ScreenShake:
     def __init__(self,game):
         self.game = game
         self.screen_shake = 0
         self.render_offset = [0,0]
-        self.music = pygame.mixer.Sound("Assets\Music\Wrong.wav")
+        self.music = pygame.mixer.Sound("Assets/Music/Wrong.wav")
         self.music.set_volume(0.7)
         
     
