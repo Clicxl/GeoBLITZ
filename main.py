@@ -49,11 +49,12 @@ class Game:
         self.Binary = BinaryFile(self, "Assets/Data/Data.dat")
 
         self.ID = ID()
-        self.SQL = SQL(self,"root",int(self.ID))
+        # self.SQL = SQL(self,"root",int(self.ID))
         # Music
         pygame.mixer.music.load("Assets/Music/Main_Song.wav")
-        pygame.mixer.music.set_volume(0.025)
+        # pygame.mixer.music.set_volume(0.025)
         pygame.mixer.music.play(-1)
+
     def game(self):
         # Game Loop ----------------------------------------------------------------- #
         while True:
@@ -135,7 +136,6 @@ We greatly appreciate the contributions of these websites and their dedication \
 
     def run(self):
         self.game()
-
 
 if __name__ == "__main__":
     Game = Game()

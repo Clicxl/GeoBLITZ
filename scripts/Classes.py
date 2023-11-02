@@ -20,7 +20,6 @@ class Country(pygame.sprite.Sprite):
         # Chances -------------------------------------------------------------#
         self.chances = 0
 
-
     def con_dict(self):
         for image in listdir('Assets/Countries'):
             self.Countries[image.replace(".png", "")] = {"Name": image.replace(".png", "").lower(),"Dir": "Countries/" + image}
@@ -34,8 +33,6 @@ class Country(pygame.sprite.Sprite):
         except:
             self.game.game_state = False
             
-            
-
     def check(self, Input):
         self.Input = Input.lower()
         if self.Input == self.Countries_copy[self.Rand_Cont]["Name"]:
@@ -52,16 +49,18 @@ class Country(pygame.sprite.Sprite):
                 self.Countries_copy.pop(self.Rand_Cont)
                 self.redraw_display()
                 self.chances = 0
+
         if self.game.game_state == False:
+            print("Entering")
             self.game.Binary.write_score({self.game.ID: {"score": self.game.POINTS}})
-            self.game.SQL.update(self.game.POINTS)
+            # self.game.SQL.update(self.game.POINTS)
             
         return ""
+
     def redraw_display(self):
         self.randCont()
         self.game.Country_Display.fill("Black")
         self.image = load_img(self.Img_path)
-        # self.game.Country_Display.set_colorkey("Black")
         self.image = pygame.transform.scale(self.image, self.game.Country_Display.get_size())
         self.image.set_alpha(100)
 
@@ -70,12 +69,12 @@ class Input(pygame.sprite.Sprite):
         super().__init__()
         self.color = color
         self.game = game
-        self.Font = Font(self.game)
+        self.Font = pygame.font.Font("Assets/Fonts/Font.otf", 32)
         # pygame.font.Font("Assets/Fonts/Font.otf", 20)
 
         # Sprite --------------------------------------------------------------#
         self.image = pygame.Surface((self.game.Country_Display.get_width(),50))
-        self.image.fill(self.color)
+        self.image.fill('Grey')
         
         self.rect = self.image.get_rect()
         self.rect.topleft = [self.game.Country_Rect.left, self.game.Country_Rect.bottom + 100]
@@ -89,9 +88,9 @@ class Input(pygame.sprite.Sprite):
                 self.Input_text += event.unicode
 
     def update(self, event):
-        self.image.fill(self.color)
+        self.image.fill('Grey')
         self.text_input(event)
-        self.Font_surf = self.Font.type(self.Input_text.upper(),self.rect.center,16)
+        self.Font_surf = self.Font.render(self.Input_text,False,(0,0,0))
         self.image.blit(self.Font_surf, (10, 7))
 
 class Timer(pygame.sprite.Sprite):
@@ -111,7 +110,6 @@ class Timer(pygame.sprite.Sprite):
         self.ratio = min(60,max(0, TIME - (self.current_time / 1000)))
         self.image = pygame.transform.scale(self.image, (25*3, self.ratio * 15))
         if self.ratio == 0:
-            print(self.game.POINTS)
             self.game.game_state = False
 
 class BackGround:
@@ -252,7 +250,6 @@ class ScreenShake:
         self.music = pygame.mixer.Sound("Assets/Music/Wrong.wav")
         self.music.set_volume(0.7)
         
-    
     def shake(self):
         """Shakes the screen when something goes wrong"""
         self.screen_shake = 30

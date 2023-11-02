@@ -24,9 +24,8 @@ class BinaryFile:
         return scores
     
 class SQL:
-    def __init__(self,game,password,player_id,username='root',host='localhost'):
-        self.conn = sql.connect(host=host,user=username,password=password)
-        self.create_table()
+    def __init__(self,game,password,player_id,username='root',host='localhost',database="Globule"):
+        self.conn = sql.connect(host=host,user=username,password=password,auth_plugin = "mysql_native_password")
         self.cursor = self.conn.cursor()
         self.db = "Globule"
         self.table = "Points"
@@ -35,11 +34,12 @@ class SQL:
         self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {self.db}")
         self.conn.commit()
         self.cursor.execute(f"USE {self.db}")
+        
         self.create_table()
         
     def create_table(self):
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS {self.table} (
-                            player_id VARCHAR(50) PRIMARY KEY,points INTEGER)''')
+                            player_id VARCHAR(50),points INTEGER)''')
         self.conn.commit()
 
     def add_points(self, points):
@@ -50,4 +50,4 @@ class SQL:
         self.add_points(points)
         self.conn.close()
         
-        
+
