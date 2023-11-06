@@ -18,7 +18,7 @@ class Game:
         self.Country_Display.set_colorkey((0, 0, 0))
         self.Country_Rect = self.Country_Display.get_rect(center=(SCREEN[0] / 2, (SCREEN[1] / 2) - 100))
         self.POINTS = 0
-
+        self.data = False
         self.game_state = "menu"
         # Sprites And Groups ---------------------------------------------------------#
         self.Country = Country(self)
@@ -49,10 +49,9 @@ class Game:
         self.Binary = BinaryFile(self, "Assets/Data/Data.dat")
 
         self.ID = ID()
-        # self.SQL = SQL(self,"root",int(self.ID))
+        self.SQL = SQL(self,"root",int(self.ID))
         # Music
         pygame.mixer.music.load("Assets/Music/Main_Song.wav")
-        # pygame.mixer.music.set_volume(0.025)
         pygame.mixer.music.play(-1)
 
     def game(self):
@@ -62,7 +61,7 @@ class Game:
             self.dt = time.time() - self.prev_time
             self.dt *= 60
             self.prev_time = time.time()
-
+            
             # Background  -------------------------------------------------------------- #
             self.screen.fill(BACKGROUND)
             self.BG_screen.fill("Black")
@@ -70,7 +69,7 @@ class Game:
             self.Para_2.update()
             self.Para_3.update()
             self.screen.blit(self.BG_screen, (0, 0))
-
+            self.Typing.type(f"FPS: {int(self.clock.get_fps())}",(self.screen.get_width()-100,50),20)
             # Buttons  ---------------------------------------------------------------- #
             for self.event in pygame.event.get():
                 if self.event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE] and self.game_state in [
@@ -83,7 +82,11 @@ class Game:
                 if self.event.type == pygame.KEYDOWN:
                     if self.event.key == K_RETURN:
                         self.Text.Input_text = self.Country.check(self.Text.Input_text)
+                        
 
+                if pygame.mouse.get_focused() == False:
+                    self.clock.tick(10)
+                    
                 # Sprite Group Update ----------------------------------------------------- #
             if self.game_state == 'game':
                 self.Country_Group.draw(self.Country_Display)
@@ -102,6 +105,10 @@ class Game:
                 self.menu()
             if self.game_state == False:
                 self.Typing.type(f"Your Points are: {str(self.POINTS)}",(self.screen.get_width() / 2, self.screen.get_height() / 2), 64)
+                if self.data == False:
+                    self.Binary.write_score({self.ID: {"score": self.POINTS}})
+                    self.SQL.update(self.POINTS)
+                    self.data = True
                 
             if self.game_state == "credits":
                 self.Typing.type('''Special Thanks to the following websites for their invaluable resources: \n
@@ -119,7 +126,6 @@ We greatly appreciate the contributions of these websites and their dedication \
             pygame.display.flip()
 
     def menu(self):
-
         self.Typing.type("Globule", (self.screen.get_width() / 2, self.screen.get_height() / 3), 64)
         self.play.draw()
         self.credits.draw()
@@ -127,7 +133,7 @@ We greatly appreciate the contributions of these websites and their dedication \
 
         if self.play.clicked == True:
             self.game_state = 'game'
-            self.Start = self.clock.get_time()
+            self.Start = pygame.time.get_ticks() 
         elif self.credits.clicked == True:  
             self.game_state = 'credits'
         elif self.exit.clicked == True:
@@ -136,6 +142,7 @@ We greatly appreciate the contributions of these websites and their dedication \
 
     def run(self):
         self.game()
+        
 
 if __name__ == "__main__":
     Game = Game()

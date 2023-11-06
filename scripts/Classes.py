@@ -50,10 +50,6 @@ class Country(pygame.sprite.Sprite):
                 self.redraw_display()
                 self.chances = 0
 
-        if self.game.game_state == False:
-            print("Entering")
-            self.game.Binary.write_score({self.game.ID: {"score": self.game.POINTS}})
-            # self.game.SQL.update(self.game.POINTS)
             
         return ""
 
@@ -70,27 +66,35 @@ class Input(pygame.sprite.Sprite):
         self.color = color
         self.game = game
         self.Font = pygame.font.Font("Assets/Fonts/Font.otf", 32)
-        # pygame.font.Font("Assets/Fonts/Font.otf", 20)
 
         # Sprite --------------------------------------------------------------#
-        self.image = pygame.Surface((self.game.Country_Display.get_width(),50))
+        self.image = pygame.Surface((self.game.Country_Display.get_width() + 10,50))
         self.image.fill('Grey')
-        
+        self.back = False
         self.rect = self.image.get_rect()
         self.rect.topleft = [self.game.Country_Rect.left, self.game.Country_Rect.bottom + 100]
         self.Input_text = ""
 
     def text_input(self, event):
         if event.type == pygame.KEYDOWN and event.key not in [K_RETURN, K_TAB, K_DELETE]:
-            if event.key == K_BACKSPACE:
-                self.Input_text = self.Input_text[:-1]
-            else:
+            if event.key == K_BACKSPACE and self.back == False:
+                self.back = True
+                
+            elif event.key not in [K_RETURN, K_TAB, K_DELETE]:
                 self.Input_text += event.unicode
+            
+        elif event.type == pygame.KEYUP and event.key == K_BACKSPACE:
+            self.back = False
+        
+        if self.back == True:
+            self.Input_text = self.Input_text[:-1]
+
 
     def update(self, event):
         self.image.fill('Grey')
         self.text_input(event)
         self.Font_surf = self.Font.render(self.Input_text,False,(0,0,0))
+        self.image = pygame.transform.scale(self.image,(min(max(self.Font_surf.get_width()+10, self.game.Country_Display.get_width()),self.game.Country_Display.get_width() + 100),50))
         self.image.blit(self.Font_surf, (10, 7))
 
 class Timer(pygame.sprite.Sprite):
