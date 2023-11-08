@@ -43,8 +43,8 @@ class Game:
         self.Typing = Font(self)
         self.particles = Particle(self)
         self.play = Button(self, (self.screen.get_width() / 2, (3 * self.screen.get_height() / 5) - 16), "Play")
-        self.credits = Button(self,(self.screen.get_width()/2,(6*self.screen.get_height()/8)-16),"Credits")
-        self.exit = Button(self, (self.screen.get_width() / 2, (9 * self.screen.get_height() / 10) - 16), "Exit")
+        self.guide = Button(self, (self.screen.get_width() / 2,(6*self.screen.get_height()/8)-16), "Guide")
+        self.credits = Button(self,(self.screen.get_width()/2, (9 * self.screen.get_height() / 10) - 16),"Credits")
         self.screen_shake = ScreenShake(self)
         self.Binary = BinaryFile(self, "Assets/Data/Data.dat")
 
@@ -70,6 +70,7 @@ class Game:
             self.Para_3.update()
             self.screen.blit(self.BG_screen, (0, 0))
             self.Typing.type(f"FPS: {int(self.clock.get_fps())}",(self.screen.get_width()-100,50),20)
+            
             # Buttons  ---------------------------------------------------------------- #
             for self.event in pygame.event.get():
                 if self.event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE] and self.game_state in [
@@ -77,15 +78,12 @@ class Game:
                     pygame.quit()
                     exit()
                 self.Text.update(self.event)
-                if pygame.key.get_pressed()[pygame.K_ESCAPE] and self.game_state in ['credits']:
-                    self.game_state = 'menu'
                 if self.event.type == pygame.KEYDOWN:
                     if self.event.key == K_RETURN:
                         self.Text.Input_text = self.Country.check(self.Text.Input_text)
                         
-
-                if pygame.mouse.get_focused() == False:
-                    self.clock.tick(10)
+                if self.event.type == pygame.KEYDOWN and pygame.key.get_pressed()[pygame.K_ESCAPE] and self.game_state not in ['menu','game',False]:
+                    self.game_state = 'menu'
                     
                 # Sprite Group Update ----------------------------------------------------- #
             if self.game_state == 'game':
@@ -94,31 +92,33 @@ class Game:
 
                 self.Text_Group.draw(self.screen)
                 self.Timer_group.draw(self.screen)
-                
 
                 # Update  ----------------------------------------------------------------- #
                 self.Timer_group.update()
                 self.Text_Group.update(self.event)
-                
-
-            if self.game_state == 'menu':
+                self.Typing.type("Guess The Country",(self.screen.get_width()/2, 25),20)
+            elif self.game_state == 'menu':
                 self.menu()
-            if self.game_state == False:
+            elif self.game_state == False:
                 self.Typing.type(f"Your Points are: {str(self.POINTS)}",(self.screen.get_width() / 2, self.screen.get_height() / 2), 64)
                 if self.data == False:
                     self.Binary.write_score({self.ID: {"score": self.POINTS}})
                     self.SQL.update(self.POINTS)
+                    data = self.SQL.lb()
+                    for i in range(len(data)):
+                        self.Typing.type(f"...{self.data[i]}",(2*self.screen.get_width()/3,2*self.screen.get_height()/3),20)
+                    
                     self.data = True
+            elif self.game_state == "credits":
+                credits = pygame.image.load("Assets\Misc\credits.png").convert_alpha()
+                credits_rect = credits.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
+                self.screen.blit(credits,credits_rect)
+            elif self.game_state == "guide" :
+                guide = pygame.image.load("Assets\Misc\guide.png").convert_alpha()
+                guide_rect = guide.get_rect(
+                    center=(self.screen.get_width()/2, self.screen.get_height()/2))
+                self.screen.blit(guide,guide_rect)
                 
-            if self.game_state == "credits":
-                self.Typing.type('''Special Thanks to the following websites for their invaluable resources: \n
-- Country Outline Images: https://www.worldmapsonline.com
-- Pixel Art Graphics: Self Made
-- Sound Effects and Music: Self Made
-- Pygame Tutorials: https://www.youtube.com/@DaFluffyPotato
-
-We greatly appreciate the contributions of these websites and their dedication \nto sharing knowledge and assets,making this \nproject possible.''',(self.screen.get_width()/2,self.screen.get_height()/2),17)
-
             self.particles.parti_draw()
             self.main_screen.blit(self.screen, self.screen_shake.render_offset)
             self.screen_shake.render_offset = [0, 0]
@@ -128,17 +128,17 @@ We greatly appreciate the contributions of these websites and their dedication \
     def menu(self):
         self.Typing.type("Globule", (self.screen.get_width() / 2, self.screen.get_height() / 3), 64)
         self.play.draw()
+        self.guide.draw()
         self.credits.draw()
-        self.exit.draw()
 
         if self.play.clicked == True:
             self.game_state = 'game'
             self.Start = pygame.time.get_ticks() 
-        elif self.credits.clicked == True:  
+        elif self.guide.clicked == True:  
+            self.game_state = 'guide'
+        elif self.credits.clicked == True:
             self.game_state = 'credits'
-        elif self.exit.clicked == True:
-            pygame.quit()
-            exit()
+
 
     def run(self):
         self.game()

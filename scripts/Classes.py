@@ -269,4 +269,4 @@ class ScreenShake:
                 
                 
             self.game.screen.fill((191,0,0,50))
-            self.game.screen.set_alpha(75)
+            self.game.screen.set_alpha(130)

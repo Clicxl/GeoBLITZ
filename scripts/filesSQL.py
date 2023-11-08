@@ -50,4 +50,16 @@ class SQL:
         self.add_points(points)
         self.conn.close()
         
+    def lb(self):
+        self.cursor.execute(f"select points from {self.table}")
+        data = self.cursor.fetchall()
+        self.lb = []
+        temp = list(data)
+        for i in range(len(data)):
+            self.lb.append(max(temp))
+            temp.remove(max(temp))   
+        
+        return self.lb
+                
+        
 
