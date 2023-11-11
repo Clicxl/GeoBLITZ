@@ -34,7 +34,7 @@ class Country(pygame.sprite.Sprite):
             self.game.game_state = False
             
     def check(self, Input):
-        self.Input = Input.lower()
+        self.Input = Input[:-1].lower()
         if self.Input == self.Countries_copy[self.Rand_Cont]["Name"]:
             self.game.POINTS += 4
             self.Countries_copy.pop(self.Rand_Cont)
@@ -81,13 +81,19 @@ class Input(pygame.sprite.Sprite):
                 self.back = True
                 
             elif event.key not in [K_RETURN, K_TAB, K_DELETE]:
-                self.Input_text += event.unicode
+                self.Input_text = self.Input_text[:-1]
+                self.Input_text += event.unicode + "|"
+    
             
         elif event.type == pygame.KEYUP and event.key == K_BACKSPACE:
-            self.back = False
-        
+                self.back = False
+            
         if self.back == True:
-            self.Input_text = self.Input_text[:-1]
+            self.Input_text = self.Input_text[:-2]
+            self.Input_text += "|"
+        
+        if self.Input_text == "":
+            self.Input_text = "|"
 
 
     def update(self, event):
@@ -239,7 +245,6 @@ class Button:
                 
             if pygame.mouse.get_pressed()[0] == 0 and self.clicked == True:
                 self.clicked = False
-                
         else:
             self.image = self.state[0]
             self.Font_center = list(self.rect.center)
